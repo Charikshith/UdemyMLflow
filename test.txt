@@ -1,2 +1,0 @@
-This is comment in the local system.
-Commit in the remote.
