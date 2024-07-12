@@ -2,3 +2,5 @@ data/
 .*.py.un~
 mlruns
 __pycache__
+mytracking
+myartifacts
