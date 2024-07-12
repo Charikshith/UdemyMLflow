@@ -45,9 +45,13 @@ if __name__=='__main__':
     alpha = args.alpha
     l1_ratio = args.l1_ratio
 
-    
+    # Set tracking uri for mlruns, when setting his path the runs will be stored in the specific path
+    mlflow.set_tracking_uri(uri="./mytracking")
+
+    print("The tracking uri is : ", mlflow.get_tracking_uri())
+
     #initialize set experiment with experiment name
-    exp = mlflow.set_experiment(experiment_name="experiment_1")
+    exp = mlflow.set_experiment(experiment_name="experiment_uri")
 
     #Start the run with the experiment id
     with mlflow.start_run(experiment_id=exp.experiment_id):

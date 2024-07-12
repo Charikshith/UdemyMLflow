@@ -1,9 +1,11 @@
+## Creating experiment name
+
 import warnings
 import argparse
 import pandas as pd
 import numpy as np
 import logging
-
+import pathlib 
 import mlflow
 import mlflow.sklearn  
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
@@ -45,12 +47,26 @@ if __name__=='__main__':
     alpha = args.alpha
     l1_ratio = args.l1_ratio
 
-    
+    # Set tracking uri for mlruns, when setting his path the runs will be stored in the specific path
+    mlflow.set_tracking_uri(uri="./mytracking")
+
+    print("The tracking uri is : ", mlflow.get_tracking_uri())
+#############################################################
     #initialize set experiment with experiment name
-    exp = mlflow.set_experiment(experiment_name="experiment_1")
+    
+    exp_id = mlflow.create_experiment(name="experiment_artifacts",tags={"version":'v1'},artifact_location=pathlib.Path.cwd().joinpath("myartifacts").as_uri())
+    get_exp = mlflow.get_experiment(exp_id)
+
+    print("Name: {}".format(get_exp.name)) # exp_create_exp_artifact
+    print("Experiment_id: {}".format(get_exp.experiment_id)) # 473668474643335
+    print("Artifact Location: {}".format(get_exp.artifact_location)) # ../examples/2.Logging/myartifacts
+    print("Tags: {}".format(get_exp.tags)) # { 'version': 'v1'}
+    print("Lifecycle_stage: {}".format(get_exp.lifecycle_stage)) # active
+    print("Creation timestamp: {}".format(get_exp.creation_time)) # 1709202641
+
 
     #Start the run with the experiment id
-    with mlflow.start_run(experiment_id=exp.experiment_id):
+    with mlflow.start_run(experiment_id=exp_id):
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state= 3)
         lr.fit(train_x,train_y)
 
