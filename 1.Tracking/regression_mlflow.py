@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import logging
 
+import mlflow
+import mlflow.sklearn  
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import ElasticNet
@@ -29,7 +31,7 @@ if __name__=='__main__':
     np.random.seed(3)
 
     #Read the csv file from the path mentioned
-    data = pd.read_csv("data/red-wine-quality.csv")
+    data = pd.read_csv("D:/Code/MLflow/MLops/UdemyMLflow/data/red-wine-quality.csv")
     
     # Spliting to train and test
     train, test = train_test_split(data)
@@ -43,12 +45,25 @@ if __name__=='__main__':
     alpha = args.alpha
     l1_ratio = args.l1_ratio
 
-    lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state= 3)
-    lr.fit(train_x,train_y)
+    #initialize set experiment with experiment name
+    exp = mlflow.set_experiment(experiment_name="experiment_1")
 
-    pred1 = lr.predict(test_x)
+    #Start the run with the experiment id
+    with mlflow.start_run(experiment_id=exp.experiment_id):
+        lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state= 3)
+        lr.fit(train_x,train_y)
 
-    (rmse,mea,r2)= eval_metrics(test_y,pred1)
-    print(" ElasticNet Model (alpha={:f}, l1_ratio={:f})".format(alpha,l1_ratio))
-    print(f"RMSE:{rmse} \n MAE:{mea} \n R2:{r2}",)
-    
+        pred1 = lr.predict(test_x)
+
+        (rmse,mea,r2)= eval_metrics(test_y,pred1)
+        print(" ElasticNet Model (alpha={:f}, l1_ratio={:f})".format(alpha,l1_ratio))
+        print(f"RMSE:{rmse} \n MAE:{mea} \n R2:{r2}",)
+        
+
+        # logging the parameters
+        mlflow.log_param("alpha",alpha)
+        mlflow.log_param("l1_ratio",l1_ratio)
+        mlflow.log_metric("rmse",rmse)
+        mlflow.log_metric("mae",mea)
+        mlflow.log_metric("r2",r2)
+        mlflow.sklearn.log_model(lr,"my_model")
