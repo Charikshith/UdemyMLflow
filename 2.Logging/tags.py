@@ -71,8 +71,14 @@ if __name__=='__main__':
 
     #Start the run with the experiment id
     mlflow.start_run(experiment_id=get_exp.experiment_id)
-    #over write an exisiting run copy the run id  #a94c9fd8a4cd4b9f912f7d0709125444 the params cannot be changes only model names
-    # mlflow.start_run(run_id='a94c9fd8a4cd4b9f912f7d0709125444')
+    
+    tags = {
+        "engineering": "ML platform",
+        "release.candidate":"RC1",
+        "release.version": "2.0"
+    }
+
+    mlflow.set_tags(tags)
     lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state= 3)
     lr.fit(train_x,train_y)
 
