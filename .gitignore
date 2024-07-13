@@ -4,3 +4,4 @@ mlruns
 __pycache__
 mytracking
 myartifacts
+Assignment1/*.csv
